@@ -26,6 +26,10 @@ button {
   cursor: pointer;
 }
 
+a {
+  color: inherit;
+}
+
 .page {
   width: min(1450px, calc(100% - 56px));
   margin: 32px auto 60px;
@@ -198,9 +202,15 @@ button {
   font-size: 22px;
 }
 
+.problem-item a {
+  color: #3046c5;
+  text-decoration: none;
+  font-weight: 800;
+}
+
 .pro-layout {
   display: grid;
-  grid-template-columns: 410px 1fr;
+  grid-template-columns: 430px 1fr;
   gap: 24px;
 }
 
@@ -231,7 +241,7 @@ button {
   display: grid;
   gap: 10px;
   margin-top: 22px;
-  max-height: 660px;
+  max-height: 720px;
   overflow: auto;
   padding-right: 4px;
 }
@@ -261,6 +271,17 @@ button {
   flex: 0 0 auto;
 }
 
+.toc-list small {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.toc-list button.active small {
+  color: rgba(255,255,255,.78);
+}
+
 .pattern-top {
   display: flex;
   justify-content: space-between;
@@ -282,6 +303,24 @@ button {
   letter-spacing: -0.03em;
 }
 
+.badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.badges span {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3046c5;
+  font-weight: 900;
+  font-size: 15px;
+}
+
 .pattern-top button {
   font-size: 18px;
   padding: 16px 20px;
@@ -290,21 +329,21 @@ button {
 
 .choice-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
   margin-bottom: 24px;
 }
 
 .choice-row button {
-  font-size: 19px;
-  padding: 18px 14px;
+  font-size: 18px;
+  padding: 18px 12px;
 }
 
 .content-box {
   background: #f8fafc;
   border-radius: 22px;
   padding: 26px;
-  min-height: 390px;
+  min-height: 430px;
 }
 
 .content-box h3 {
@@ -318,6 +357,27 @@ button {
   margin: 0;
   color: #334155;
   font-weight: 700;
+}
+
+.link-section {
+  margin-bottom: 24px;
+}
+
+.link-section h4 {
+  margin: 0 0 12px;
+  font-size: 23px;
+}
+
+.link-section a {
+  display: block;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  border-radius: 16px;
+  background: white;
+  color: #3046c5;
+  font-weight: 900;
+  text-decoration: none;
+  border: 1px solid #e5e7eb;
 }
 
 pre {
