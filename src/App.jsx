@@ -301,6 +301,278 @@ visited[0][0] = 1`,
       { id: "pg-159993-outer", platform: "Programmers", title: "미로 탈출", difficulty: "Level 2", url: "https://school.programmers.co.kr/learn/courses/30/lessons/159993", note: "분리 BFS" },
       { id: "ct-escape", platform: "CodeTree", title: "탈출 / 외곽 BFS 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=escape%20bfs", note: "탈출 BFS 검색 결과" },
     ],
+  },,
+{
+    id: "zero-one-bfs",
+    title: "0-1 BFS",
+    subtitle: "deque 최단거리 최적화",
+    difficulty: "PRO",
+    level: 4,
+    tags: ["BFS", "deque", "0-1 BFS", "shortest path"],
+    signal: "가중치가 0 또는 1 → heap 대신 deque",
+    idea: [
+      "간선 비용이 0 또는 1일 때 사용한다.",
+      "비용 0이면 appendleft, 비용 1이면 append 한다.",
+      "다익스트라보다 가볍게 O(V+E)에 처리한다.",
+    ],
+    code: `from collections import deque
+
+INF = int(1e9)
+dist = [[INF] * m for _ in range(n)]
+dq = deque()
+
+dist[0][0] = 0
+dq.append((0, 0))
+
+while dq:
+    y, x = dq.popleft()
+
+    for dy, dx in ((1,0), (-1,0), (0,1), (0,-1)):
+        ny, nx = y + dy, x + dx
+
+        if ny < 0 or ny >= n or nx < 0 or nx >= m:
+            continue
+
+        cost = board[ny][nx]  # 0 또는 1
+
+        if dist[ny][nx] > dist[y][x] + cost:
+            dist[ny][nx] = dist[y][x] + cost
+
+            if cost == 0:
+                dq.appendleft((ny, nx))
+            else:
+                dq.append((ny, nx))`,
+    traps: [
+      "가중치가 0/1이 아닐 때는 일반 다익스트라를 써야 한다.",
+      "방문 체크만 쓰면 더 짧은 경로 갱신을 놓칠 수 있다.",
+      "비용 0은 반드시 appendleft 해야 한다.",
+    ],
+    problems: [
+      { id: "boj-1261", platform: "BOJ", title: "알고스팟", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/1261", note: "0-1 BFS 대표 문제" },
+      { id: "boj-13549", platform: "BOJ", title: "숨바꼭질 3", difficulty: "Gold V", url: "https://www.acmicpc.net/problem/13549", note: "순간이동 비용 0" },
+      { id: "boj-2665", platform: "BOJ", title: "미로만들기", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/2665", note: "벽 변경 최소화" },
+      { id: "ct-01bfs", platform: "CodeTree", title: "0-1 BFS / 최단거리 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=0-1%20bfs", note: "0-1 BFS 검색 결과" },
+    ],
+  },
+  {
+    id: "union-find",
+    title: "Union-Find",
+    subtitle: "Disjoint Set",
+    difficulty: "Gold+",
+    level: 3,
+    tags: ["union find", "disjoint set", "MST", "group"],
+    signal: "연결 여부, 그룹 합치기, 사이클 판정 → Union-Find",
+    idea: [
+      "각 원소의 대표 부모를 관리한다.",
+      "find로 대표를 찾고 union으로 그룹을 합친다.",
+      "경로 압축으로 find를 빠르게 만든다.",
+    ],
+    code: `parent = [i for i in range(n + 1)]
+
+def find(x):
+    if parent[x] != x:
+        parent[x] = find(parent[x])
+    return parent[x]
+
+def union(a, b):
+    pa = find(a)
+    pb = find(b)
+
+    if pa == pb:
+        return False
+
+    parent[pb] = pa
+    return True`,
+    traps: [
+      "find 결과끼리 비교해야 한다.",
+      "parent[a]와 parent[b]를 바로 비교하면 틀릴 수 있다.",
+      "크루스칼에서는 union이 성공한 간선만 선택한다.",
+    ],
+    problems: [
+      { id: "boj-1717", platform: "BOJ", title: "집합의 표현", difficulty: "Gold V", url: "https://www.acmicpc.net/problem/1717", note: "Union-Find 기본" },
+      { id: "boj-1976", platform: "BOJ", title: "여행 가자", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/1976", note: "연결 여부 확인" },
+      { id: "boj-1197", platform: "BOJ", title: "최소 스패닝 트리", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/1197", note: "크루스칼 MST" },
+      { id: "pg-42861", platform: "Programmers", title: "섬 연결하기", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/42861", note: "MST 대표 문제" },
+      { id: "ct-union", platform: "CodeTree", title: "Union-Find / Disjoint Set 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=union%20find", note: "Union-Find 검색 결과" },
+    ],
+  },
+  {
+    id: "segment-tree",
+    title: "세그먼트 트리",
+    subtitle: "구간 쿼리 + 업데이트",
+    difficulty: "PRO",
+    level: 4,
+    tags: ["segment tree", "range query", "update"],
+    signal: "구간 합/최소/최대 + 값 변경 → Segment Tree",
+    idea: [
+      "배열 구간 정보를 트리에 저장한다.",
+      "구간 질의와 단일 업데이트를 O(logN)에 처리한다.",
+      "합, 최소, 최대, gcd 등으로 바꿔 응용한다.",
+    ],
+    code: `def build(node, start, end):
+    if start == end:
+        tree[node] = arr[start]
+        return
+
+    mid = (start + end) // 2
+    build(node * 2, start, mid)
+    build(node * 2 + 1, mid + 1, end)
+
+    tree[node] = tree[node * 2] + tree[node * 2 + 1]
+
+def query(node, start, end, left, right):
+    if right < start or end < left:
+        return 0
+
+    if left <= start and end <= right:
+        return tree[node]
+
+    mid = (start + end) // 2
+    return query(node * 2, start, mid, left, right) + query(node * 2 + 1, mid + 1, end, left, right)
+
+def update(node, start, end, idx, value):
+    if idx < start or end < idx:
+        return
+
+    if start == end:
+        tree[node] = value
+        return
+
+    mid = (start + end) // 2
+    update(node * 2, start, mid, idx, value)
+    update(node * 2 + 1, mid + 1, end, idx, value)
+
+    tree[node] = tree[node * 2] + tree[node * 2 + 1]`,
+    traps: [
+      "tree 크기는 보통 4*N으로 잡으면 안전하다.",
+      "0-index와 1-index를 섞으면 틀린다.",
+      "최소/최대 쿼리는 return 기본값을 INF/-INF로 바꿔야 한다.",
+    ],
+    problems: [
+      { id: "boj-2042", platform: "BOJ", title: "구간 합 구하기", difficulty: "Gold I", url: "https://www.acmicpc.net/problem/2042", note: "세그먼트 트리 기본" },
+      { id: "boj-11505", platform: "BOJ", title: "구간 곱 구하기", difficulty: "Gold I", url: "https://www.acmicpc.net/problem/11505", note: "곱 세그먼트 트리" },
+      { id: "boj-2357", platform: "BOJ", title: "최솟값과 최댓값", difficulty: "Gold I", url: "https://www.acmicpc.net/problem/2357", note: "min/max 쿼리" },
+      { id: "ct-segtree", platform: "CodeTree", title: "Segment Tree / 구간 쿼리 연습", difficulty: "Gold~Platinum", url: "https://www.codetree.ai/training-field/search?keyword=segment%20tree", note: "세그먼트 트리 검색 결과" },
+    ],
+  },
+  {
+    id: "two-pointer",
+    title: "투 포인터 / 슬라이딩 윈도우",
+    subtitle: "연속 구간 최적화",
+    difficulty: "Gold+",
+    level: 3,
+    tags: ["two pointer", "sliding window", "prefix"],
+    signal: "연속 부분 배열, 구간 길이, 부분합 → left/right",
+    idea: [
+      "left와 right를 한 방향으로 움직인다.",
+      "현재 구간 상태를 유지하면서 답을 갱신한다.",
+      "정렬 배열 또는 양수 배열에서 특히 강력하다.",
+    ],
+    code: `left = 0
+sumv = 0
+answer = int(1e9)
+
+for right in range(n):
+    sumv += arr[right]
+
+    while sumv >= target:
+        answer = min(answer, right - left + 1)
+        sumv -= arr[left]
+        left += 1`,
+    traps: [
+      "음수가 있으면 단순 투 포인터가 깨질 수 있다.",
+      "while 조건을 잘못 잡으면 한 칸 차이로 틀린다.",
+      "right는 for문, left는 while문으로 움직이면 실수가 줄어든다.",
+    ],
+    problems: [
+      { id: "boj-1806", platform: "BOJ", title: "부분합", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/1806", note: "투 포인터 대표" },
+      { id: "boj-2003", platform: "BOJ", title: "수들의 합 2", difficulty: "Silver IV", url: "https://www.acmicpc.net/problem/2003", note: "기초 연속합" },
+      { id: "boj-1644", platform: "BOJ", title: "소수의 연속합", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/1644", note: "소수 + 투 포인터" },
+      { id: "pg-67258", platform: "Programmers", title: "보석 쇼핑", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/67258", note: "슬라이딩 윈도우 + dict" },
+      { id: "ct-twopointer", platform: "CodeTree", title: "Two Pointer / Sliding Window 연습", difficulty: "Silver~Gold", url: "https://www.codetree.ai/training-field/search?keyword=two%20pointer", note: "투 포인터 검색 결과" },
+    ],
+  },
+  {
+    id: "bitmask",
+    title: "비트마스크 상태 압축",
+    subtitle: "선택/방문 상태 관리",
+    difficulty: "PRO",
+    level: 4,
+    tags: ["bitmask", "state", "visited"],
+    signal: "선택 여부, 열쇠, 방문 집합, 부분집합 → bitmask",
+    idea: [
+      "상태를 정수 하나로 압축한다.",
+      "i번째 선택 여부는 state & (1<<i)로 확인한다.",
+      "상태 추가는 state | (1<<i)로 처리한다.",
+    ],
+    code: `# i번째 원소가 선택되어 있는지 확인
+if state & (1 << i):
+    pass
+
+# i번째 원소 선택 추가
+next_state = state | (1 << i)
+
+# i번째 원소 제거
+next_state = state & ~(1 << i)
+
+# 모든 부분집합 순회
+for state in range(1 << n):
+    for i in range(n):
+        if state & (1 << i):
+            continue`,
+    traps: [
+      "n이 너무 크면 2^n이라 불가능하다.",
+      "비트 우선순위 때문에 괄호를 습관화해야 한다.",
+      "방문 배열은 visited[node][state]처럼 같이 쓰는 경우가 많다.",
+    ],
+    problems: [
+      { id: "boj-1194-bit", platform: "BOJ", title: "달이 차오른다, 가자.", difficulty: "Gold I", url: "https://www.acmicpc.net/problem/1194", note: "열쇠 6개 비트마스크 BFS" },
+      { id: "boj-2098", platform: "BOJ", title: "외판원 순회", difficulty: "Gold I", url: "https://www.acmicpc.net/problem/2098", note: "TSP DP + bitmask" },
+      { id: "boj-12813", platform: "BOJ", title: "이진수 연산", difficulty: "Bronze II", url: "https://www.acmicpc.net/problem/12813", note: "비트 연산 기초" },
+      { id: "pg-92343-bit", platform: "Programmers", title: "양과 늑대", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/92343", note: "가능 후보 상태 관리" },
+      { id: "ct-bitmask", platform: "CodeTree", title: "Bitmask / 상태 압축 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=bitmask", note: "비트마스크 검색 결과" },
+    ],
+  },
+  {
+    id: "dp-state",
+    title: "DP + 상태 정의",
+    subtitle: "상태 전이 최적화",
+    difficulty: "PRO",
+    level: 4,
+    tags: ["DP", "state", "transition", "optimization"],
+    signal: "최적값, 경우의 수, 이전 선택 영향 → dp[state] 정의",
+    idea: [
+      "dp가 무엇을 의미하는지 먼저 정의한다.",
+      "현재 상태에서 다음 상태로 전이한다.",
+      "상태 수와 전이 수를 곱해서 시간복잡도를 계산한다.",
+    ],
+    code: `INF = int(1e9)
+dp = [INF] * (1 << n)
+dp[0] = 0
+
+for state in range(1 << n):
+    if dp[state] == INF:
+        continue
+
+    for i in range(n):
+        if state & (1 << i):
+            continue
+
+        next_state = state | (1 << i)
+        dp[next_state] = min(dp[next_state], dp[state] + cost[i])`,
+    traps: [
+      "dp 정의가 흐리면 전이가 꼬인다.",
+      "초기값과 불가능 상태 처리가 중요하다.",
+      "상태 수가 커지면 메모리 초과가 먼저 난다.",
+    ],
+    problems: [
+      { id: "boj-11049", platform: "BOJ", title: "행렬 곱셈 순서", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/11049", note: "구간 DP 기본" },
+      { id: "boj-1520", platform: "BOJ", title: "내리막 길", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/1520", note: "DFS + DP 메모이제이션" },
+      { id: "boj-2098-dp", platform: "BOJ", title: "외판원 순회", difficulty: "Gold I", url: "https://www.acmicpc.net/problem/2098", note: "비트마스크 DP 대표" },
+      { id: "pg-42898", platform: "Programmers", title: "등굣길", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/42898", note: "격자 DP" },
+      { id: "pg-12913", platform: "Programmers", title: "땅따먹기", difficulty: "Level 2", url: "https://school.programmers.co.kr/learn/courses/30/lessons/12913", note: "이전 선택 제한 DP" },
+      { id: "ct-dp", platform: "CodeTree", title: "DP / 상태 전이 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=dynamic%20programming", note: "DP 검색 결과" },
+    ],
   },
 ];
 
@@ -324,6 +596,58 @@ function getAllProblems(patterns) {
     }))
   );
 }
+
+
+function mergePatterns(savedPatterns) {
+  if (!Array.isArray(savedPatterns)) return initialPatterns;
+
+  const savedById = new Map(savedPatterns.map((pattern) => [pattern.id, pattern]));
+
+  return initialPatterns.map((basePattern) => {
+    const savedPattern = savedById.get(basePattern.id);
+
+    if (!savedPattern) return basePattern;
+
+    const savedProblems = Array.isArray(savedPattern.problems) ? savedPattern.problems : [];
+    const mergedProblemsById = new Map();
+
+    basePattern.problems.forEach((problem) => mergedProblemsById.set(problem.id, problem));
+    savedProblems.forEach((problem) => mergedProblemsById.set(problem.id, problem));
+
+    return {
+      ...basePattern,
+      ...savedPattern,
+      problems: Array.from(mergedProblemsById.values()),
+    };
+  });
+}
+
+function clearOldStorageKeys() {
+  [
+    "algo-tracker-pro-patterns-v1",
+    "algo-tracker-pro-dashboard-v1"
+  ].forEach((key) => {
+    const value = localStorage.getItem(key);
+    if (!value) return;
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed?.patterns) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          patterns: mergePatterns(parsed.patterns),
+          solvedMap: parsed.solvedMap || {},
+        }));
+      } else if (Array.isArray(parsed)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          patterns: mergePatterns(parsed),
+          solvedMap: {},
+        }));
+      }
+    } catch {
+      // ignore invalid old data
+    }
+  });
+}
+
 
 function pickTodayProblem(problems) {
   if (problems.length === 0) return null;
@@ -563,8 +887,12 @@ function PatternDetail({ pattern, setPatterns, solvedMap, onToggleSolved, platfo
 export default function App() {
   const [patterns, setPatterns] = useState(() => {
     try {
+      clearOldStorageKeys();
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved).patterns : initialPatterns;
+      if (!saved) return initialPatterns;
+
+      const parsed = JSON.parse(saved);
+      return mergePatterns(parsed.patterns);
     } catch {
       return initialPatterns;
     }
