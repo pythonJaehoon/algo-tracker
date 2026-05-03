@@ -1,0 +1,11 @@
+.container {
+  padding: 20px;
+}
+.card {
+  border: 1px solid #ccc;
+  margin: 20px;
+  padding: 15px;
+}
+button {
+  margin: 10px 0;
+}
