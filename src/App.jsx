@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
-const STORAGE_KEY = "algo-tracker-pro-patterns-v1";
+const STORAGE_KEY = "algo-tracker-pro-dashboard-v1";
 
 const initialPatterns = [
   {
@@ -11,7 +11,7 @@ const initialPatterns = [
     difficulty: "PRO",
     level: 4,
     tags: ["dict", "heapq", "lazy deletion", "ranking"],
-    signal: "삭제 많음 + 정렬 유지 + id 기반",
+    signal: "삭제 많음 + 정렬 유지 + id 기반 → lazy deletion",
     idea: [
       "dict = 진짜 데이터",
       "heap = 후보 저장소",
@@ -72,10 +72,13 @@ def get_top5_height():
       "쓰레기 데이터가 많아지면 rebuild가 필요하다.",
     ],
     problems: [
-      { id: "boj-7662", platform: "BOJ", title: "이중 우선순위 큐", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/7662" },
-      { id: "boj-21939", platform: "BOJ", title: "문제 추천 시스템 Version 1", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/21939" },
-      { id: "boj-21944", platform: "BOJ", title: "문제 추천 시스템 Version 2", difficulty: "Gold II", url: "https://www.acmicpc.net/problem/21944" },
-      { id: "boj-21942", platform: "BOJ", title: "부품 대여장", difficulty: "Gold II", url: "https://www.acmicpc.net/problem/21942" },
+      { id: "boj-7662", platform: "BOJ", title: "이중 우선순위 큐", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/7662", note: "삭제 많은 heap lazy deletion 기본" },
+      { id: "boj-21939", platform: "BOJ", title: "문제 추천 시스템 Version 1", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/21939", note: "id 기반 문제 관리" },
+      { id: "boj-21944", platform: "BOJ", title: "문제 추천 시스템 Version 2", difficulty: "Gold II", url: "https://www.acmicpc.net/problem/21944", note: "여러 기준 추천 시스템" },
+      { id: "boj-21942", platform: "BOJ", title: "부품 대여장", difficulty: "Gold II", url: "https://www.acmicpc.net/problem/21942", note: "id/시간/상태 관리" },
+      { id: "pg-42628", platform: "Programmers", title: "이중우선순위큐", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/42628", note: "최댓값/최솟값 동시 삭제" },
+      { id: "pg-42627", platform: "Programmers", title: "디스크 컨트롤러", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/42627", note: "작업 우선순위 heap" },
+      { id: "ct-top-k", platform: "CodeTree", title: "Top K / 우선순위 큐 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=priority%20queue", note: "우선순위 큐 검색 결과" },
     ],
   },
   {
@@ -116,9 +119,12 @@ def kth_dijkstra(start):
       "간선 가중치가 음수면 다익스트라를 쓰면 안 된다.",
     ],
     problems: [
-      { id: "boj-1854", platform: "BOJ", title: "K번째 최단경로 찾기", difficulty: "Platinum IV", url: "https://www.acmicpc.net/problem/1854" },
-      { id: "boj-5719", platform: "BOJ", title: "거의 최단 경로", difficulty: "Platinum V", url: "https://www.acmicpc.net/problem/5719" },
-      { id: "boj-11779", platform: "BOJ", title: "최소비용 구하기 2", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/11779" },
+      { id: "boj-1854", platform: "BOJ", title: "K번째 최단경로 찾기", difficulty: "Platinum IV", url: "https://www.acmicpc.net/problem/1854", note: "대표 K번째 최단경로" },
+      { id: "boj-5719", platform: "BOJ", title: "거의 최단 경로", difficulty: "Platinum V", url: "https://www.acmicpc.net/problem/5719", note: "최단경로 제거 후 재탐색" },
+      { id: "boj-11779", platform: "BOJ", title: "최소비용 구하기 2", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/11779", note: "경로 복원 기본" },
+      { id: "pg-72413", platform: "Programmers", title: "합승 택시 요금", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/72413", note: "다익스트라/플로이드 판단" },
+      { id: "pg-49189", platform: "Programmers", title: "가장 먼 노드", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/49189", note: "그래프 최단거리 기본" },
+      { id: "ct-shortest", platform: "CodeTree", title: "최단거리 / 다익스트라 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=dijkstra", note: "다익스트라 검색 결과" },
     ],
   },
   {
@@ -128,7 +134,7 @@ def kth_dijkstra(start):
     difficulty: "PRO",
     level: 3,
     tags: ["BFS", "state", "3D visited"],
-    signal: "벽 부수기, 열쇠, 문, 방향, 남은 횟수",
+    signal: "벽 부수기, 열쇠, 문, 방향, 남은 횟수 → 상태 차원 추가",
     idea: [
       "위치만 방문 체크하면 안 된다.",
       "같은 칸이어도 상태가 다르면 다른 노드다.",
@@ -163,10 +169,14 @@ while q:
       "벽을 부순 상태와 안 부순 상태는 완전히 다르다.",
     ],
     problems: [
-      { id: "boj-2206", platform: "BOJ", title: "벽 부수고 이동하기", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/2206" },
-      { id: "boj-1194", platform: "BOJ", title: "달이 차오른다, 가자.", difficulty: "Gold I", url: "https://www.acmicpc.net/problem/1194" },
-      { id: "boj-1600", platform: "BOJ", title: "말이 되고픈 원숭이", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/1600" },
-      { id: "boj-7569", platform: "BOJ", title: "토마토", difficulty: "Gold V", url: "https://www.acmicpc.net/problem/7569" },
+      { id: "boj-2206", platform: "BOJ", title: "벽 부수고 이동하기", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/2206", note: "벽 1회 상태 BFS" },
+      { id: "boj-1194", platform: "BOJ", title: "달이 차오른다, 가자.", difficulty: "Gold I", url: "https://www.acmicpc.net/problem/1194", note: "열쇠 비트마스킹 BFS" },
+      { id: "boj-1600", platform: "BOJ", title: "말이 되고픈 원숭이", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/1600", note: "말 이동 횟수 상태" },
+      { id: "boj-7569", platform: "BOJ", title: "토마토", difficulty: "Gold V", url: "https://www.acmicpc.net/problem/7569", note: "3차원 BFS 기본" },
+      { id: "pg-1844", platform: "Programmers", title: "게임 맵 최단거리", difficulty: "Level 2", url: "https://school.programmers.co.kr/learn/courses/30/lessons/1844", note: "격자 BFS 기본" },
+      { id: "pg-87694", platform: "Programmers", title: "아이템 줍기", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/87694", note: "좌표 2배 확장 BFS" },
+      { id: "pg-159993", platform: "Programmers", title: "미로 탈출", difficulty: "Level 2", url: "https://school.programmers.co.kr/learn/courses/30/lessons/159993", note: "레버 상태 분리" },
+      { id: "ct-bfs", platform: "CodeTree", title: "격자 BFS / 상태 BFS 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=bfs%20grid", note: "격자 BFS 검색 결과" },
     ],
   },
   {
@@ -176,7 +186,7 @@ while q:
     difficulty: "PRO",
     level: 3,
     tags: ["DFS", "combination", "pruning"],
-    signal: "여러 개 선택, 제거 조합, 최적값",
+    signal: "여러 개 선택, 제거 조합, 최적값 → DFS + pruning",
     idea: [
       "모든 조합을 DFS로 만든다.",
       "현재 값이 이미 답보다 나쁘면 중단한다.",
@@ -203,9 +213,13 @@ while q:
       "DFS 후 상태 복구를 빼먹으면 틀린다.",
     ],
     problems: [
-      { id: "boj-15684", platform: "BOJ", title: "사다리 조작", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/15684" },
-      { id: "boj-17135", platform: "BOJ", title: "캐슬 디펜스", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/17135" },
-      { id: "boj-14502", platform: "BOJ", title: "연구소", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/14502" },
+      { id: "boj-15684", platform: "BOJ", title: "사다리 조작", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/15684", note: "조합 + 시뮬레이션" },
+      { id: "boj-17135", platform: "BOJ", title: "캐슬 디펜스", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/17135", note: "궁수 위치 조합" },
+      { id: "boj-14502", platform: "BOJ", title: "연구소", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/14502", note: "벽 3개 조합 + BFS" },
+      { id: "pg-92343", platform: "Programmers", title: "양과 늑대", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/92343", note: "트리 DFS 상태 탐색" },
+      { id: "pg-60062", platform: "Programmers", title: "외벽 점검", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/60062", note: "순열/가지치기" },
+      { id: "pg-43164", platform: "Programmers", title: "여행경로", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/43164", note: "DFS 경로 복원" },
+      { id: "ct-backtracking", platform: "CodeTree", title: "Backtracking / 조합 탐색 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=backtracking", note: "백트래킹 검색 결과" },
     ],
   },
   {
@@ -215,7 +229,7 @@ while q:
     difficulty: "Gold+",
     level: 2,
     tags: ["heapq", "tuple", "tie-break"],
-    signal: "1순위, 2순위, 삽입순 정렬",
+    signal: "1순위, 2순위, 삽입순 정렬 → tuple heap",
     idea: [
       "heapq는 튜플 앞에서부터 비교한다.",
       "큰 값이 먼저면 음수로 바꿔 넣는다.",
@@ -241,9 +255,12 @@ def pop():
       "동점 처리 기준을 반드시 튜플에 포함한다.",
     ],
     problems: [
-      { id: "boj-11286", platform: "BOJ", title: "절댓값 힙", difficulty: "Silver I", url: "https://www.acmicpc.net/problem/11286" },
-      { id: "boj-2075", platform: "BOJ", title: "N번째 큰 수", difficulty: "Silver II", url: "https://www.acmicpc.net/problem/2075" },
-      { id: "boj-2696", platform: "BOJ", title: "중앙값 구하기", difficulty: "Gold II", url: "https://www.acmicpc.net/problem/2696" },
+      { id: "boj-11286", platform: "BOJ", title: "절댓값 힙", difficulty: "Silver I", url: "https://www.acmicpc.net/problem/11286", note: "복합 우선순위 기본" },
+      { id: "boj-2075", platform: "BOJ", title: "N번째 큰 수", difficulty: "Silver II", url: "https://www.acmicpc.net/problem/2075", note: "Top N heap 유지" },
+      { id: "boj-2696", platform: "BOJ", title: "중앙값 구하기", difficulty: "Gold II", url: "https://www.acmicpc.net/problem/2696", note: "두 heap 응용" },
+      { id: "pg-42626", platform: "Programmers", title: "더 맵게", difficulty: "Level 2", url: "https://school.programmers.co.kr/learn/courses/30/lessons/42626", note: "최솟값 2개 반복" },
+      { id: "pg-12927", platform: "Programmers", title: "야근 지수", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/12927", note: "최댓값 heap" },
+      { id: "ct-heap", platform: "CodeTree", title: "Heap / Priority Queue 연습", difficulty: "Silver~Gold", url: "https://www.codetree.ai/training-field/search?keyword=heap", note: "heap 검색 결과" },
     ],
   },
   {
@@ -253,7 +270,7 @@ def pop():
     difficulty: "Gold+",
     level: 3,
     tags: ["BFS", "padding", "outside"],
-    signal: "밖에서 들어가기, 외곽, 탈출",
+    signal: "밖에서 들어가기, 외곽, 탈출 → 맵 확장",
     idea: [
       "맵을 상하좌우 한 칸씩 확장한다.",
       "확장된 바깥 칸에서 BFS를 시작한다.",
@@ -277,12 +294,43 @@ visited[0][0] = 1`,
       "가장자리 조건을 직접 처리하려고 하면 실수가 많다.",
     ],
     problems: [
-      { id: "boj-9376", platform: "BOJ", title: "탈옥", difficulty: "Platinum V", url: "https://www.acmicpc.net/problem/9376" },
-      { id: "boj-5427", platform: "BOJ", title: "불", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/5427" },
-      { id: "boj-3055", platform: "BOJ", title: "탈출", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/3055" },
+      { id: "boj-9376", platform: "BOJ", title: "탈옥", difficulty: "Platinum V", url: "https://www.acmicpc.net/problem/9376", note: "외부 BFS 대표" },
+      { id: "boj-5427", platform: "BOJ", title: "불", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/5427", note: "불 + 사람 BFS" },
+      { id: "boj-3055", platform: "BOJ", title: "탈출", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/3055", note: "물 + 고슴도치 BFS" },
+      { id: "pg-87694-outer", platform: "Programmers", title: "아이템 줍기", difficulty: "Level 3", url: "https://school.programmers.co.kr/learn/courses/30/lessons/87694", note: "외곽선 경로 BFS" },
+      { id: "pg-159993-outer", platform: "Programmers", title: "미로 탈출", difficulty: "Level 2", url: "https://school.programmers.co.kr/learn/courses/30/lessons/159993", note: "분리 BFS" },
+      { id: "ct-escape", platform: "CodeTree", title: "탈출 / 외곽 BFS 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=escape%20bfs", note: "탈출 BFS 검색 결과" },
     ],
   },
 ];
+
+const platformOrder = { BOJ: 0, CodeTree: 1, Programmers: 2 };
+
+function sortProblems(problems) {
+  return [...problems].sort((a, b) => {
+    const po = (platformOrder[a.platform] ?? 99) - (platformOrder[b.platform] ?? 99);
+    if (po !== 0) return po;
+    return a.title.localeCompare(b.title, "ko");
+  });
+}
+
+function getAllProblems(patterns) {
+  return patterns.flatMap((pattern) =>
+    pattern.problems.map((problem) => ({
+      ...problem,
+      patternId: pattern.id,
+      patternTitle: pattern.title,
+      patternLevel: pattern.level,
+    }))
+  );
+}
+
+function pickTodayProblem(problems) {
+  if (problems.length === 0) return null;
+  const today = new Date();
+  const key = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  return problems[key % problems.length];
+}
 
 function CodeBlock({ children }) {
   const [copied, setCopied] = useState(false);
@@ -299,12 +347,8 @@ function CodeBlock({ children }) {
 
   return (
     <div className="code-wrap">
-      <button className="copy-btn" onClick={copy}>
-        {copied ? "복사됨" : "코드 복사"}
-      </button>
-      <pre>
-        <code>{children}</code>
-      </pre>
+      <button className="copy-btn" onClick={copy}>{copied ? "복사됨" : "코드 복사"}</button>
+      <pre><code>{children}</code></pre>
     </div>
   );
 }
@@ -314,21 +358,70 @@ function DifficultyBadge({ difficulty, level }) {
     <div className="difficulty">
       <span>{difficulty}</span>
       <div className="dots">
-        {Array.from({ length: 5 }).map((_, idx) => (
-          <i key={idx} className={idx < level ? "on" : ""} />
-        ))}
+        {Array.from({ length: 5 }).map((_, idx) => <i key={idx} className={idx < level ? "on" : ""} />)}
       </div>
     </div>
   );
 }
 
-function ProblemManager({ problems, setPatterns, selectedId }) {
-  const [form, setForm] = useState({
-    platform: "BOJ",
-    title: "",
-    difficulty: "Gold III",
-    url: "",
+function StatsDashboard({ patterns, solvedMap }) {
+  const allProblems = getAllProblems(patterns);
+  const solvedCount = allProblems.filter((p) => solvedMap[p.id]).length;
+  const percent = allProblems.length ? Math.round((solvedCount / allProblems.length) * 100) : 0;
+
+  const byPlatform = ["BOJ", "CodeTree", "Programmers"].map((platform) => {
+    const list = allProblems.filter((p) => p.platform === platform);
+    const solved = list.filter((p) => solvedMap[p.id]).length;
+    return { platform, total: list.length, solved };
   });
+
+  return (
+    <section className="dashboard">
+      <div className="stat-card primary">
+        <span>전체 진행률</span>
+        <strong>{percent}%</strong>
+        <div className="progress"><i style={{ width: `${percent}%` }} /></div>
+        <em>{solvedCount} / {allProblems.length} 문제 완료</em>
+      </div>
+
+      {byPlatform.map((row) => {
+        const rowPercent = row.total ? Math.round((row.solved / row.total) * 100) : 0;
+        return (
+          <div className="stat-card" key={row.platform}>
+            <span>{row.platform}</span>
+            <strong>{row.solved}/{row.total}</strong>
+            <div className="progress"><i style={{ width: `${rowPercent}%` }} /></div>
+            <em>{rowPercent}% 완료</em>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
+function TodayProblem({ problem, onToggleSolved, solved }) {
+  if (!problem) return null;
+
+  return (
+    <section className="today-card">
+      <div>
+        <p className="eyebrow">오늘의 PRO 문제</p>
+        <h2>{problem.title}</h2>
+        <p>{problem.patternTitle} · {problem.platform} · {problem.difficulty}</p>
+        <p className="note">{problem.note}</p>
+      </div>
+      <div className="today-actions">
+        <a href={problem.url} target="_blank" rel="noreferrer">문제 열기</a>
+        <button className={solved ? "done" : ""} onClick={() => onToggleSolved(problem.id)}>
+          {solved ? "풀이 완료됨" : "풀이 체크"}
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function ProblemManager({ problems, setPatterns, selectedId, solvedMap, onToggleSolved, platformFilter, setPlatformFilter }) {
+  const [form, setForm] = useState({ platform: "BOJ", title: "", difficulty: "Gold III", url: "", note: "" });
 
   const addProblem = () => {
     if (!form.title.trim()) return;
@@ -336,20 +429,19 @@ function ProblemManager({ problems, setPatterns, selectedId }) {
     setPatterns((prev) =>
       prev.map((pattern) => {
         if (pattern.id !== selectedId) return pattern;
-
         const newProblem = {
           id: `${form.platform.toLowerCase()}-${Date.now()}`,
           platform: form.platform.trim() || "BOJ",
           title: form.title.trim(),
           difficulty: form.difficulty.trim() || "Gold III",
           url: form.url.trim() || "#",
+          note: form.note.trim() || "직접 추가한 문제",
         };
-
         return { ...pattern, problems: [...pattern.problems, newProblem] };
       })
     );
 
-    setForm({ platform: "BOJ", title: "", difficulty: "Gold III", url: "" });
+    setForm({ platform: "BOJ", title: "", difficulty: "Gold III", url: "", note: "" });
   };
 
   const removeProblem = (problemId) => {
@@ -361,11 +453,18 @@ function ProblemManager({ problems, setPatterns, selectedId }) {
     );
   };
 
+  const visibleProblems = sortProblems(problems).filter((p) => platformFilter === "ALL" || p.platform === platformFilter);
+
   return (
     <section className="manager">
-      <div className="section-title">
-        <p>문제 관리</p>
-        <h2>추천 문제 추가 / 삭제</h2>
+      <div className="section-title"><p>문제 관리</p><h2>추천 문제 추가 / 삭제 / 풀이 체크</h2></div>
+
+      <div className="platform-tabs">
+        {["ALL", "BOJ", "CodeTree", "Programmers"].map((p) => (
+          <button key={p} className={platformFilter === p ? "active" : ""} onClick={() => setPlatformFilter(p)}>
+            {p === "ALL" ? "전체" : p}
+          </button>
+        ))}
       </div>
 
       <div className="problem-form">
@@ -375,17 +474,22 @@ function ProblemManager({ problems, setPatterns, selectedId }) {
           <option value="Programmers">Programmers</option>
         </select>
         <input placeholder="문제명" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-        <input placeholder="난이도 예: Gold III" value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: e.target.value })} />
+        <input placeholder="난이도" value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: e.target.value })} />
         <input placeholder="문제 링크" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} />
+        <input placeholder="메모" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
         <button onClick={addProblem}>추가</button>
       </div>
 
       <div className="problem-list">
-        {problems.map((problem) => (
-          <div className="problem-row" key={problem.id}>
-            <div>
+        {visibleProblems.map((problem) => (
+          <div className={solvedMap[problem.id] ? "problem-row solved" : "problem-row"} key={problem.id}>
+            <label className="check">
+              <input type="checkbox" checked={!!solvedMap[problem.id]} onChange={() => onToggleSolved(problem.id)} />
+              <span />
+            </label>
+            <div className="problem-info">
               <strong>[{problem.platform}] {problem.title}</strong>
-              <span>{problem.difficulty}</span>
+              <span>{problem.difficulty} · {problem.note}</span>
             </div>
             <div className="problem-actions">
               <a href={problem.url} target="_blank" rel="noreferrer">열기</a>
@@ -398,7 +502,9 @@ function ProblemManager({ problems, setPatterns, selectedId }) {
   );
 }
 
-function PatternDetail({ pattern, setPatterns }) {
+function PatternDetail({ pattern, setPatterns, solvedMap, onToggleSolved, platformFilter, setPlatformFilter }) {
+  const sorted = sortProblems(pattern.problems).filter((p) => platformFilter === "ALL" || p.platform === platformFilter);
+
   return (
     <article className="detail">
       <div className="detail-head">
@@ -410,15 +516,11 @@ function PatternDetail({ pattern, setPatterns }) {
         <DifficultyBadge difficulty={pattern.difficulty} level={pattern.level} />
       </div>
 
-      <div className="tag-list">
-        {pattern.tags.map((tag) => <span key={tag}>{tag}</span>)}
-      </div>
+      <div className="tag-list">{pattern.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
 
       <section>
         <div className="section-title"><p>핵심 아이디어</p><h2>이렇게 보면 됩니다</h2></div>
-        <ol className="idea-list">
-          {pattern.idea.map((item, idx) => <li key={idx}>{item}</li>)}
-        </ol>
+        <ol className="idea-list">{pattern.idea.map((item, idx) => <li key={idx}>{item}</li>)}</ol>
       </section>
 
       <section>
@@ -428,27 +530,32 @@ function PatternDetail({ pattern, setPatterns }) {
 
       <section>
         <div className="section-title"><p>실전 함정</p><h2>여기서 많이 틀립니다</h2></div>
-        <div className="trap-grid">
-          {pattern.traps.map((trap, idx) => (
-            <div className="trap" key={idx}><b>{idx + 1}</b><p>{trap}</p></div>
-          ))}
-        </div>
+        <div className="trap-grid">{pattern.traps.map((trap, idx) => <div className="trap" key={idx}><b>{idx + 1}</b><p>{trap}</p></div>)}</div>
       </section>
 
       <section>
-        <div className="section-title"><p>자동 연결</p><h2>백준 / 코드트리 추천 문제</h2></div>
+        <div className="section-title"><p>추천 문제</p><h2>백준 / 코드트리 / 프로그래머스</h2></div>
         <div className="problem-cards">
-          {pattern.problems.map((problem) => (
-            <a className="problem-card" key={problem.id} href={problem.url} target="_blank" rel="noreferrer">
+          {sorted.map((problem) => (
+            <a className={solvedMap[problem.id] ? "problem-card solved" : "problem-card"} key={problem.id} href={problem.url} target="_blank" rel="noreferrer">
               <span>{problem.platform}</span>
               <strong>{problem.title}</strong>
               <em>{problem.difficulty}</em>
+              <small>{problem.note}</small>
             </a>
           ))}
         </div>
       </section>
 
-      <ProblemManager problems={pattern.problems} selectedId={pattern.id} setPatterns={setPatterns} />
+      <ProblemManager
+        problems={pattern.problems}
+        selectedId={pattern.id}
+        setPatterns={setPatterns}
+        solvedMap={solvedMap}
+        onToggleSolved={onToggleSolved}
+        platformFilter={platformFilter}
+        setPlatformFilter={setPlatformFilter}
+      />
     </article>
   );
 }
@@ -457,19 +564,32 @@ export default function App() {
   const [patterns, setPatterns] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : initialPatterns;
+      return saved ? JSON.parse(saved).patterns : initialPatterns;
     } catch {
       return initialPatterns;
+    }
+  });
+
+  const [solvedMap, setSolvedMap] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved).solvedMap || {} : {};
+    } catch {
+      return {};
     }
   });
 
   const [selectedId, setSelectedId] = useState(patterns[0]?.id || initialPatterns[0].id);
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState("all");
+  const [platformFilter, setPlatformFilter] = useState("ALL");
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(patterns));
-  }, [patterns]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ patterns, solvedMap }));
+  }, [patterns, solvedMap]);
+
+  const allProblems = useMemo(() => sortProblems(getAllProblems(patterns)), [patterns]);
+  const todayProblem = useMemo(() => pickTodayProblem(allProblems), [allProblems]);
 
   const filtered = useMemo(() => {
     return patterns.filter((pattern) => {
@@ -487,34 +607,39 @@ export default function App() {
         (levelFilter === "mid" && pattern.level === 3) ||
         (levelFilter === "hard" && pattern.level >= 4);
 
-      return matchesQuery && matchesLevel;
+      const matchesPlatform =
+        platformFilter === "ALL" ||
+        pattern.problems.some((problem) => problem.platform === platformFilter);
+
+      return matchesQuery && matchesLevel && matchesPlatform;
     });
-  }, [patterns, query, levelFilter]);
+  }, [patterns, query, levelFilter, platformFilter]);
 
   const selected = patterns.find((pattern) => pattern.id === selectedId) || patterns[0] || initialPatterns[0];
+
+  const toggleSolved = (problemId) => {
+    setSolvedMap((prev) => ({ ...prev, [problemId]: !prev[problemId] }));
+  };
 
   const deletePattern = (id) => {
     if (patterns.length <= 1) return;
     const nextList = patterns.filter((pattern) => pattern.id !== id);
     setPatterns(nextList);
-    if (selectedId === id && nextList[0]) {
-      setSelectedId(nextList[0].id);
-    }
+    if (selectedId === id && nextList[0]) setSelectedId(nextList[0].id);
   };
 
   const resetData = () => {
     localStorage.removeItem(STORAGE_KEY);
     setPatterns(initialPatterns);
+    setSolvedMap({});
     setSelectedId(initialPatterns[0].id);
+    setPlatformFilter("ALL");
   };
 
   return (
     <div className="app">
       <aside className="sidebar">
-        <div className="brand">
-          <div className="logo">A</div>
-          <div><strong>Algo Tracker</strong><span>PRO Pattern Cards</span></div>
-        </div>
+        <div className="brand"><div className="logo">A</div><div><strong>Algo Tracker</strong><span>PRO Pattern Cards</span></div></div>
 
         <div className="filters">
           <input placeholder="패턴/문제 검색" value={query} onChange={(e) => setQuery(e.target.value)} />
@@ -524,6 +649,14 @@ export default function App() {
             <option value="mid">Gold+</option>
             <option value="hard">PRO급</option>
           </select>
+        </div>
+
+        <div className="platform-tabs side">
+          {["ALL", "BOJ", "CodeTree", "Programmers"].map((p) => (
+            <button key={p} className={platformFilter === p ? "active" : ""} onClick={() => setPlatformFilter(p)}>
+              {p === "ALL" ? "전체" : p}
+            </button>
+          ))}
         </div>
 
         <div className="pattern-menu">
@@ -545,13 +678,17 @@ export default function App() {
           </div>
         </div>
 
-        <div className="summary-grid">
-          <div><strong>{patterns.length}</strong><span>패턴 수</span></div>
-          <div><strong>{patterns.reduce((acc, p) => acc + p.problems.length, 0)}</strong><span>연결 문제 수</span></div>
-          <div><strong>저장됨</strong><span>localStorage 적용</span></div>
-        </div>
+        <StatsDashboard patterns={patterns} solvedMap={solvedMap} />
+        <TodayProblem problem={todayProblem} solved={todayProblem ? !!solvedMap[todayProblem.id] : false} onToggleSolved={toggleSolved} />
 
-        <PatternDetail pattern={selected} setPatterns={setPatterns} />
+        <PatternDetail
+          pattern={selected}
+          setPatterns={setPatterns}
+          solvedMap={solvedMap}
+          onToggleSolved={toggleSolved}
+          platformFilter={platformFilter}
+          setPlatformFilter={setPlatformFilter}
+        />
       </main>
     </div>
   );
