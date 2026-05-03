@@ -1,601 +1,558 @@
-import { useMemo, useState } from 'react'
-import './App.css'
+import { useEffect, useMemo, useState } from "react";
+import "./App.css";
 
-const initialProblems = [
-  { id: 1, title: '백준 2151 거울 설치', status: '진행중', url: 'https://www.acmicpc.net/problem/2151' },
-  { id: 2, title: '백준 1854 K번째 최단경로', status: '미분류', url: 'https://www.acmicpc.net/problem/1854' },
-  { id: 3, title: '코드트리 왕실의 기사 대결', status: '완료', url: 'https://www.codetree.ai/training-field/frequent-problems/problems/royal-knight-duel/description?page=1&pageSize=20' }
-]
+const STORAGE_KEY = "algo-tracker-pro-patterns-v1";
 
-const patterns = [
+const initialPatterns = [
   {
-    "title": "다익스트라 변형",
-    "difficulty": "Gold 2 ~ Platinum 5",
-    "level": "PRO 기본~중급",
-    "quick5": "가중치 + 최단거리 → 다익스트라",
-    "quick30": "상태가 붙으면 dist[노드][상태] 또는 dist[위치][상태]로 확장합니다.",
-    "boj": [
-      [
-        "백준 1753 최단경로",
-        "https://www.acmicpc.net/problem/1753"
-      ],
-      [
-        "백준 1504 특정한 최단 경로",
-        "https://www.acmicpc.net/problem/1504"
-      ],
-      [
-        "백준 2151 거울 설치",
-        "https://www.acmicpc.net/problem/2151"
-      ]
+    id: "topk-lazy",
+    title: "Top-K 유지 + 삭제/수정",
+    subtitle: "Heap + Lazy Deletion",
+    difficulty: "PRO",
+    level: 4,
+    tags: ["dict", "heapq", "lazy deletion", "ranking"],
+    signal: "삭제 많음 + 정렬 유지 + id 기반",
+    idea: [
+      "dict = 진짜 데이터",
+      "heap = 후보 저장소",
+      "삭제/수정 시 heap을 직접 건드리지 않음",
+      "조회할 때 dict와 비교해서 유효성 검사",
     ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
+    code: `import heapq
+
+data = {}
+heap_height = []
+heap_age = []
+heap_school = []
+order = 0
+
+def add_or_update(id, height, age, school):
+    global order
+    order += 1
+
+    data[id] = (height, age, school, order)
+
+    heapq.heappush(heap_height, (-height, order, id))
+    heapq.heappush(heap_age, (age, order, id))
+    heapq.heappush(heap_school, (-school, order, id))
+
+def delete(id):
+    if id in data:
+        del data[id]
+
+def get_top5_height():
+    res = []
+    temp = []
+
+    while heap_height and len(res) < 5:
+        neg_h, order, id = heapq.heappop(heap_height)
+        temp.append((neg_h, order, id))
+
+        if id not in data:
+            continue
+
+        h, a, s, cur_order = data[id]
+
+        if cur_order != order:
+            continue
+
+        if -neg_h != h:
+            continue
+
+        res.append(id)
+
+    for item in temp:
+        heapq.heappush(heap_height, item)
+
+    return res`,
+    traps: [
+      "heap 안에는 삭제/수정 전 오래된 데이터가 남는다.",
+      "큰 값 우선이면 음수로 넣는다.",
+      "Top K 유지와 전체 중 Top K 조회는 다르다.",
+      "쓰레기 데이터가 많아지면 rebuild가 필요하다.",
     ],
-    "code": "import heapq\nINF = int(1e18)\n\ndef dijkstra(start):\n    dist = [INF] * (n + 1)\n    dist[start] = 0\n    h = [(0, start)]\n\n    while h:\n        nowv, nowp = heapq.heappop(h)\n        if dist[nowp] != nowv:\n            continue\n\n        for nextv, nextp in graph[nowp]:\n            cost = nowv + nextv\n            if dist[nextp] > cost:\n                dist[nextp] = cost\n                heapq.heappush(h, (cost, nextp))\n\n    return dist"
+    problems: [
+      { id: "boj-7662", platform: "BOJ", title: "이중 우선순위 큐", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/7662" },
+      { id: "boj-21939", platform: "BOJ", title: "문제 추천 시스템 Version 1", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/21939" },
+      { id: "boj-21944", platform: "BOJ", title: "문제 추천 시스템 Version 2", difficulty: "Gold II", url: "https://www.acmicpc.net/problem/21944" },
+      { id: "boj-21942", platform: "BOJ", title: "부품 대여장", difficulty: "Gold II", url: "https://www.acmicpc.net/problem/21942" },
+    ],
   },
   {
-    "title": "K번째 최단거리",
-    "difficulty": "Platinum 5 ~ Platinum 4",
-    "level": "PRO 중급",
-    "quick5": "최단거리 하나가 아니라 K번째 최단거리 → 노드별 여러 비용 저장",
-    "quick30": "각 노드마다 도착 비용을 K개까지 보관하고, 더 좋은 후보만 힙에 넣습니다.",
-    "boj": [
-      [
-        "백준 1854 K번째 최단경로",
-        "https://www.acmicpc.net/problem/1854"
-      ]
+    id: "kth-dijkstra",
+    title: "K번째 최단경로",
+    subtitle: "Dijkstra 변형",
+    difficulty: "PRO",
+    level: 4,
+    tags: ["dijkstra", "heapq", "k-th path"],
+    signal: "최단이 아니라 k번째, 여러 경로 후보 유지",
+    idea: [
+      "dist[node]를 숫자 하나가 아니라 리스트로 둔다.",
+      "각 노드마다 k개까지 비용을 허용한다.",
+      "heap에서 꺼낸 비용을 dist[now]에 누적한다.",
+      "k개를 넘으면 더 이상 확장하지 않는다.",
     ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
+    code: `import heapq
+
+def kth_dijkstra(start):
+    dist = [[] for _ in range(n + 1)]
+    h = [(0, start)]
+
+    while h:
+        cost, now = heapq.heappop(h)
+
+        if len(dist[now]) >= k:
+            continue
+
+        dist[now].append(cost)
+
+        for next_cost, next_node in graph[now]:
+            heapq.heappush(h, (cost + next_cost, next_node))
+
+    return dist`,
+    traps: [
+      "일반 dist 배열처럼 최소값 하나만 저장하면 틀린다.",
+      "중복 경로 후보를 어느 정도 허용해야 한다.",
+      "간선 가중치가 음수면 다익스트라를 쓰면 안 된다.",
     ],
-    "code": "import heapq\n\ndef kth_dijkstra(start):\n    dist = [[] for _ in range(n + 1)]\n    h = [(0, start)]\n    heapq.heappush(dist[start], 0)\n\n    while h:\n        nowv, nowp = heapq.heappop(h)\n\n        for nextv, nextp in graph[nowp]:\n            cost = nowv + nextv\n\n            if len(dist[nextp]) < k:\n                heapq.heappush(dist[nextp], -cost)\n                heapq.heappush(h, (cost, nextp))\n            elif -dist[nextp][0] > cost:\n                heapq.heappop(dist[nextp])\n                heapq.heappush(dist[nextp], -cost)\n                heapq.heappush(h, (cost, nextp))"
+    problems: [
+      { id: "boj-1854", platform: "BOJ", title: "K번째 최단경로 찾기", difficulty: "Platinum IV", url: "https://www.acmicpc.net/problem/1854" },
+      { id: "boj-5719", platform: "BOJ", title: "거의 최단 경로", difficulty: "Platinum V", url: "https://www.acmicpc.net/problem/5719" },
+      { id: "boj-11779", platform: "BOJ", title: "최소비용 구하기 2", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/11779" },
+    ],
   },
   {
-    "title": "BFS + 상태",
-    "difficulty": "Gold 3 ~ Gold 1",
-    "level": "PRO 기본",
-    "quick5": "이동 횟수 최단 + 상태 변화 → 3차원 BFS",
-    "quick30": "벽 부수기, 열쇠, 방향, 점프 횟수는 visited[y][x][state]로 관리합니다.",
-    "boj": [
-      [
-        "백준 7569 토마토",
-        "https://www.acmicpc.net/problem/7569"
-      ],
-      [
-        "백준 2206 벽 부수고 이동하기",
-        "https://www.acmicpc.net/problem/2206"
-      ],
-      [
-        "백준 1194 달이 차오른다, 가자",
-        "https://www.acmicpc.net/problem/1194"
-      ]
+    id: "bfs-state",
+    title: "BFS + 상태 확장",
+    subtitle: "visited[y][x][state]",
+    difficulty: "PRO",
+    level: 3,
+    tags: ["BFS", "state", "3D visited"],
+    signal: "벽 부수기, 열쇠, 문, 방향, 남은 횟수",
+    idea: [
+      "위치만 방문 체크하면 안 된다.",
+      "같은 칸이어도 상태가 다르면 다른 노드다.",
+      "visited[y][x][state] 형태로 확장한다.",
     ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
+    code: `from collections import deque
+
+visited = [[[0] * 2 for _ in range(m)] for _ in range(n)]
+q = deque()
+q.append((0, 0, 0))
+visited[0][0][0] = 1
+
+while q:
+    y, x, used = q.popleft()
+
+    for dy, dx in ((1,0), (-1,0), (0,1), (0,-1)):
+        ny, nx = y + dy, x + dx
+
+        if ny < 0 or ny >= n or nx < 0 or nx >= m:
+            continue
+
+        if board[ny][nx] == 1 and used == 0:
+            visited[ny][nx][1] = visited[y][x][used] + 1
+            q.append((ny, nx, 1))
+
+        if board[ny][nx] == 0 and visited[ny][nx][used] == 0:
+            visited[ny][nx][used] = visited[y][x][used] + 1
+            q.append((ny, nx, used))`,
+    traps: [
+      "visited[y][x] 하나만 쓰면 상태가 섞인다.",
+      "상태 개수가 커지면 메모리부터 계산해야 한다.",
+      "벽을 부순 상태와 안 부순 상태는 완전히 다르다.",
     ],
-    "code": "from collections import deque\n\ndef bfs():\n    q = deque()\n    visited = [[[0] * STATE for _ in range(m)] for _ in range(n)]\n\n    q.append((sy, sx, 0))\n    visited[sy][sx][0] = 1\n\n    while q:\n        y, x, state = q.popleft()\n\n        for dy, dx in dirs:\n            ny = y + dy\n            nx = x + dx\n            ns = state\n\n            if 0 <= ny < n and 0 <= nx < m:\n                if visited[ny][nx][ns] == 0:\n                    visited[ny][nx][ns] = visited[y][x][state] + 1\n                    q.append((ny, nx, ns))"
+    problems: [
+      { id: "boj-2206", platform: "BOJ", title: "벽 부수고 이동하기", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/2206" },
+      { id: "boj-1194", platform: "BOJ", title: "달이 차오른다, 가자.", difficulty: "Gold I", url: "https://www.acmicpc.net/problem/1194" },
+      { id: "boj-1600", platform: "BOJ", title: "말이 되고픈 원숭이", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/1600" },
+      { id: "boj-7569", platform: "BOJ", title: "토마토", difficulty: "Gold V", url: "https://www.acmicpc.net/problem/7569" },
+    ],
   },
   {
-    "title": "DFS + 백트래킹",
-    "difficulty": "Gold 4 ~ Gold 1",
-    "level": "PRO 기본",
-    "quick5": "조합/순열/선택 제거 → DFS",
-    "quick30": "후보를 고르고 불가능한 경우는 즉시 가지치기합니다.",
-    "boj": [
-      [
-        "백준 15686 치킨 배달",
-        "https://www.acmicpc.net/problem/15686"
-      ],
-      [
-        "백준 15684 사다리 조작",
-        "https://www.acmicpc.net/problem/15684"
-      ]
+    id: "dfs-pruning",
+    title: "DFS + 조합 + 가지치기",
+    subtitle: "Backtracking",
+    difficulty: "PRO",
+    level: 3,
+    tags: ["DFS", "combination", "pruning"],
+    signal: "여러 개 선택, 제거 조합, 최적값",
+    idea: [
+      "모든 조합을 DFS로 만든다.",
+      "현재 값이 이미 답보다 나쁘면 중단한다.",
+      "선택/비선택 구조를 빠르게 설계한다.",
     ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
+    code: `def dfs(idx, selected, cost):
+    global answer
+
+    if cost >= answer:
+        return
+
+    if selected == target_count:
+        answer = min(answer, cost)
+        return
+
+    if idx == n:
+        return
+
+    dfs(idx + 1, selected + 1, cost + arr[idx])
+    dfs(idx + 1, selected, cost)`,
+    traps: [
+      "가지치기가 없으면 시간초과가 난다.",
+      "선택 순서를 정렬하면 가지치기가 더 잘 먹힐 수 있다.",
+      "DFS 후 상태 복구를 빼먹으면 틀린다.",
     ],
-    "code": "def dfs(idx, selected):\n    global answer\n\n    if len(selected) == target:\n        answer = min(answer, check(selected))\n        return\n\n    for i in range(idx, len(candidates)):\n        selected.append(candidates[i])\n        dfs(i + 1, selected)\n        selected.pop()"
+    problems: [
+      { id: "boj-15684", platform: "BOJ", title: "사다리 조작", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/15684" },
+      { id: "boj-17135", platform: "BOJ", title: "캐슬 디펜스", difficulty: "Gold III", url: "https://www.acmicpc.net/problem/17135" },
+      { id: "boj-14502", platform: "BOJ", title: "연구소", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/14502" },
+    ],
   },
   {
-    "title": "DFS + BFS 조합",
-    "difficulty": "Gold 4 ~ Gold 1",
-    "level": "PRO 기본~중급",
-    "quick5": "몇 개 선택 후 퍼뜨리기/검증 → DFS+BFS",
-    "quick30": "벽 세우기, 바이러스 선택, 제거 대상 선택 유형입니다.",
-    "boj": [
-      [
-        "백준 14502 연구소",
-        "https://www.acmicpc.net/problem/14502"
-      ],
-      [
-        "백준 17142 연구소 3",
-        "https://www.acmicpc.net/problem/17142"
-      ]
+    id: "heap-tuple",
+    title: "우선순위 여러 개 정렬",
+    subtitle: "heap tuple",
+    difficulty: "Gold+",
+    level: 2,
+    tags: ["heapq", "tuple", "tie-break"],
+    signal: "1순위, 2순위, 삽입순 정렬",
+    idea: [
+      "heapq는 튜플 앞에서부터 비교한다.",
+      "큰 값이 먼저면 음수로 바꿔 넣는다.",
+      "삽입순이 필요하면 order를 함께 넣는다.",
     ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
+    code: `import heapq
+
+h = []
+order = 0
+
+def push(name, score, priority):
+    global order
+    order += 1
+
+    heapq.heappush(h, (-score, priority, order, name))
+
+def pop():
+    score, priority, order, name = heapq.heappop(h)
+    return name, -score, priority`,
+    traps: [
+      "문자열, 숫자 섞어서 비교되면 TypeError가 날 수 있다.",
+      "큰 값 우선은 음수 처리한다.",
+      "동점 처리 기준을 반드시 튜플에 포함한다.",
     ],
-    "code": "from collections import deque\n\ndef dfs(idx, selected):\n    if len(selected) == target:\n        return bfs(selected)\n\n    for i in range(idx, len(candidates)):\n        dfs(i + 1, selected + [candidates[i]])\n\ndef bfs(selected):\n    q = deque(selected)\n    visited = [[0] * m for _ in range(n)]\n\n    while q:\n        y, x = q.popleft()\n        for dy, dx in dirs:\n            ny, nx = y + dy, x + dx\n            if 0 <= ny < n and 0 <= nx < m and not visited[ny][nx]:\n                visited[ny][nx] = 1\n                q.append((ny, nx))"
+    problems: [
+      { id: "boj-11286", platform: "BOJ", title: "절댓값 힙", difficulty: "Silver I", url: "https://www.acmicpc.net/problem/11286" },
+      { id: "boj-2075", platform: "BOJ", title: "N번째 큰 수", difficulty: "Silver II", url: "https://www.acmicpc.net/problem/2075" },
+      { id: "boj-2696", platform: "BOJ", title: "중앙값 구하기", difficulty: "Gold II", url: "https://www.acmicpc.net/problem/2696" },
+    ],
   },
   {
-    "title": "트리 삭제 / 이동",
-    "difficulty": "Gold 3 ~ Platinum 5",
-    "level": "PRO 중급",
-    "quick5": "부모-자식 관계 변경 → parent + children",
-    "quick30": "서브트리 삭제는 DFS, 이동은 기존 부모에서 제거 후 새 부모에 추가합니다.",
-    "boj": [
-      [
-        "백준 1068 트리",
-        "https://www.acmicpc.net/problem/1068"
-      ],
-      [
-        "백준 11725 트리의 부모 찾기",
-        "https://www.acmicpc.net/problem/11725"
-      ]
+    id: "outer-bfs",
+    title: "외곽 BFS",
+    subtitle: "맵 확장",
+    difficulty: "Gold+",
+    level: 3,
+    tags: ["BFS", "padding", "outside"],
+    signal: "밖에서 들어가기, 외곽, 탈출",
+    idea: [
+      "맵을 상하좌우 한 칸씩 확장한다.",
+      "확장된 바깥 칸에서 BFS를 시작한다.",
+      "경계 처리를 단순하게 만든다.",
     ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
+    code: `from collections import deque
+
+new_board = [["."] * (w + 2) for _ in range(h + 2)]
+
+for y in range(h):
+    for x in range(w):
+        new_board[y + 1][x + 1] = board[y][x]
+
+q = deque()
+q.append((0, 0))
+visited = [[0] * (w + 2) for _ in range(h + 2)]
+visited[0][0] = 1`,
+    traps: [
+      "원래 맵의 좌표와 확장 맵 좌표가 1씩 차이난다.",
+      "외부에서 시작해야 문/벽 처리가 쉬워진다.",
+      "가장자리 조건을 직접 처리하려고 하면 실수가 많다.",
     ],
-    "code": "def remove_subtree(node):\n    removed.add(node)\n    for child in children[node]:\n        remove_subtree(child)\n\ndef move_subtree(node, new_parent):\n    old_parent = parent[node]\n\n    if old_parent != -1:\n        children[old_parent].remove(node)\n\n    parent[node] = new_parent\n    children[new_parent].append(node)"
+    problems: [
+      { id: "boj-9376", platform: "BOJ", title: "탈옥", difficulty: "Platinum V", url: "https://www.acmicpc.net/problem/9376" },
+      { id: "boj-5427", platform: "BOJ", title: "불", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/5427" },
+      { id: "boj-3055", platform: "BOJ", title: "탈출", difficulty: "Gold IV", url: "https://www.acmicpc.net/problem/3055" },
+    ],
   },
-  {
-    "title": "위상정렬",
-    "difficulty": "Gold 5 ~ Gold 2",
-    "level": "PRO 기본",
-    "quick5": "선행 조건 / 순서 조건 → indegree",
-    "quick30": "진입차수 0부터 큐에 넣고 하나씩 제거합니다.",
-    "boj": [
-      [
-        "백준 2252 줄 세우기",
-        "https://www.acmicpc.net/problem/2252"
-      ],
-      [
-        "백준 1516 게임 개발",
-        "https://www.acmicpc.net/problem/1516"
-      ]
-    ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
-    ],
-    "code": "from collections import deque\n\ndef topology():\n    q = deque()\n\n    for i in range(1, n + 1):\n        if indegree[i] == 0:\n            q.append(i)\n\n    result = []\n    while q:\n        now = q.popleft()\n        result.append(now)\n\n        for nxt in graph[now]:\n            indegree[nxt] -= 1\n            if indegree[nxt] == 0:\n                q.append(nxt)\n\n    return result"
-  },
-  {
-    "title": "유니온 파인드",
-    "difficulty": "Gold 5 ~ Gold 2",
-    "level": "PRO 기본",
-    "quick5": "그룹 합치기 / 같은 집합 확인 → Union-Find",
-    "quick30": "연결 여부, 사이클 판정, 집합 병합 문제에 사용합니다.",
-    "boj": [
-      [
-        "백준 1717 집합의 표현",
-        "https://www.acmicpc.net/problem/1717"
-      ],
-      [
-        "백준 1976 여행 가자",
-        "https://www.acmicpc.net/problem/1976"
-      ],
-      [
-        "백준 1197 최소 스패닝 트리",
-        "https://www.acmicpc.net/problem/1197"
-      ]
-    ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
-    ],
-    "code": "def find(x):\n    if parent[x] != x:\n        parent[x] = find(parent[x])\n    return parent[x]\n\ndef union(a, b):\n    ra = find(a)\n    rb = find(b)\n\n    if ra == rb:\n        return\n\n    if ra < rb:\n        parent[rb] = ra\n    else:\n        parent[ra] = rb"
-  },
-  {
-    "title": "Fenwick Tree",
-    "difficulty": "Gold 2 ~ Platinum 5",
-    "level": "PRO 중급",
-    "quick5": "값 변경 + 구간합 반복 → Fenwick",
-    "quick30": "업데이트와 누적합을 O(logN)에 처리합니다.",
-    "boj": [
-      [
-        "백준 2042 구간 합 구하기",
-        "https://www.acmicpc.net/problem/2042"
-      ],
-      [
-        "백준 2357 최솟값과 최댓값",
-        "https://www.acmicpc.net/problem/2357"
-      ]
-    ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
-    ],
-    "code": "tree = [0] * (n + 1)\n\ndef update(i, diff):\n    while i <= n:\n        tree[i] += diff\n        i += i & -i\n\ndef prefix_sum(i):\n    result = 0\n    while i > 0:\n        result += tree[i]\n        i -= i & -i\n    return result\n\ndef range_sum(l, r):\n    return prefix_sum(r) - prefix_sum(l - 1)"
-  },
-  {
-    "title": "이분탐색 + 결정",
-    "difficulty": "Silver 1 ~ Gold 2",
-    "level": "PRO 기본",
-    "quick5": "최댓값의 최솟값 / 최솟값의 최댓값 → 이분탐색",
-    "quick30": "정답을 mid로 가정하고 check(mid)로 가능 여부 판단합니다.",
-    "boj": [
-      [
-        "백준 2110 공유기 설치",
-        "https://www.acmicpc.net/problem/2110"
-      ],
-      [
-        "백준 1654 랜선 자르기",
-        "https://www.acmicpc.net/problem/1654"
-      ],
-      [
-        "백준 2805 나무 자르기",
-        "https://www.acmicpc.net/problem/2805"
-      ]
-    ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
-    ],
-    "code": "def check(mid):\n    count = 0\n    for x in arr:\n        if x >= mid:\n            count += 1\n    return count >= target\n\nleft, right = 0, max_value\nanswer = 0\n\nwhile left <= right:\n    mid = (left + right) // 2\n\n    if check(mid):\n        answer = mid\n        left = mid + 1\n    else:\n        right = mid - 1"
-  },
-  {
-    "title": "투 포인터",
-    "difficulty": "Silver 1 ~ Gold 3",
-    "level": "PRO 기본",
-    "quick5": "연속 구간 / 부분합 / 길이 조건 → 투 포인터",
-    "quick30": "left, right를 이동하며 현재 합/상태를 유지합니다.",
-    "boj": [
-      [
-        "백준 1806 부분합",
-        "https://www.acmicpc.net/problem/1806"
-      ],
-      [
-        "백준 2003 수들의 합 2",
-        "https://www.acmicpc.net/problem/2003"
-      ],
-      [
-        "백준 2467 용액",
-        "https://www.acmicpc.net/problem/2467"
-      ]
-    ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
-    ],
-    "code": "left = 0\ntotal = 0\nanswer = int(1e18)\n\nfor right in range(n):\n    total += arr[right]\n\n    while total >= target:\n        answer = min(answer, right - left + 1)\n        total -= arr[left]\n        left += 1"
-  },
-  {
-    "title": "Lazy Heap",
-    "difficulty": "Gold 4 ~ Platinum 5",
-    "level": "PRO 중급",
-    "quick5": "삭제/수정이 많은 Top K → heap + dict",
-    "quick30": "heap에서 바로 삭제하지 말고 pop할 때 유효성 검증합니다.",
-    "boj": [
-      [
-        "백준 7662 이중 우선순위 큐",
-        "https://www.acmicpc.net/problem/7662"
-      ],
-      [
-        "백준 1715 카드 정렬하기",
-        "https://www.acmicpc.net/problem/1715"
-      ]
-    ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
-    ],
-    "code": "import heapq\n\nheap = []\nalive = {}\n\ndef add(id, score):\n    alive[id] = score\n    heapq.heappush(heap, (-score, id))\n\ndef delete(id):\n    if id in alive:\n        del alive[id]\n\ndef get_top():\n    while heap:\n        score, id = heapq.heappop(heap)\n        score = -score\n\n        if id in alive and alive[id] == score:\n            return id, score\n\n    return None"
-  },
-  {
-    "title": "구현 시뮬레이션",
-    "difficulty": "Gold 5 ~ Gold 1",
-    "level": "PRO 핵심",
-    "quick5": "문제가 길고 규칙이 많음 → 구현",
-    "quick30": "move, rotate, attack, update처럼 함수로 나눠 실수를 줄입니다.",
-    "boj": [
-      [
-        "백준 17144 미세먼지 안녕!",
-        "https://www.acmicpc.net/problem/17144"
-      ],
-      [
-        "백준 19237 어른 상어",
-        "https://www.acmicpc.net/problem/19237"
-      ],
-      [
-        "백준 23290 마법사 상어와 복제",
-        "https://www.acmicpc.net/problem/23290"
-      ]
-    ],
-    "codetree": [
-      [
-        "코드트리 왕실의 기사 대결",
-        "https://www.codetree.ai/training-field/frequent-problems/problems/royal-knight-duel/description?page=1&pageSize=20"
-      ],
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
-    ],
-    "code": "def move():\n    pass\n\ndef rotate():\n    pass\n\ndef attack():\n    pass\n\ndef update_state():\n    pass\n\ndef simulate():\n    for turn in range(T):\n        move()\n        attack()\n        rotate()\n        update_state()"
-  },
-  {
-    "title": "격자 회전 / 방향",
-    "difficulty": "Gold 5 ~ Gold 2",
-    "level": "PRO 핵심",
-    "quick5": "배열 회전, 방향 전환 → 좌표 변환",
-    "quick30": "90도 회전은 새 배열로 만드는 것이 안전합니다.",
-    "boj": [
-      [
-        "백준 20055 컨베이어 벨트 위의 로봇",
-        "https://www.acmicpc.net/problem/20055"
-      ],
-      [
-        "백준 17822 원판 돌리기",
-        "https://www.acmicpc.net/problem/17822"
-      ],
-      [
-        "백준 20058 마법사 상어와 파이어스톰",
-        "https://www.acmicpc.net/problem/20058"
-      ]
-    ],
-    "codetree": [
-      [
-        "코드트리 삼성 SW 기출 모음",
-        "https://www.codetree.ai/ko/frequent-problems/samsung-sw"
-      ]
-    ],
-    "code": "def rotate_90(board):\n    n = len(board)\n    m = len(board[0])\n    new_board = [[0] * n for _ in range(m)]\n\n    for y in range(n):\n        for x in range(m):\n            new_board[x][n - 1 - y] = board[y][x]\n\n    return new_board"
-  }
-]
+];
 
-function downloadText(text, fileName) {
-  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = fileName
-  a.click()
-  URL.revokeObjectURL(url)
-}
+function CodeBlock({ children }) {
+  const [copied, setCopied] = useState(false);
 
-function App() {
-  const [tab, setTab] = useState('pro')
-  const [proIndex, setProIndex] = useState(0)
-  const [proView, setProView] = useState('quick5')
-  const [problems, setProblems] = useState(initialProblems)
-  const [problemText, setProblemText] = useState('')
-  const [problemStatus, setProblemStatus] = useState('미분류')
-  const [filter, setFilter] = useState('전체')
-
-  const current = patterns[proIndex]
-
-  const filteredProblems = useMemo(() => {
-    if (filter === '전체') return problems
-    return problems.filter(p => p.status === filter)
-  }, [filter, problems])
-
-  const counts = useMemo(() => ({
-    total: problems.length,
-    done: problems.filter(p => p.status === '완료').length,
-    doing: problems.filter(p => p.status === '진행중').length
-  }), [problems])
-
-  const allLinkedProblems = useMemo(() => {
-    return patterns.flatMap(p => [
-      ...p.boj.map(x => ({ title: x[0], url: x[1], source: '백준', pattern: p.title, difficulty: p.difficulty })),
-      ...p.codetree.map(x => ({ title: x[0], url: x[1], source: '코드트리', pattern: p.title, difficulty: p.difficulty })),
-    ])
-  }, [])
-
-  const addProblem = () => {
-    if (!problemText.trim()) return
-    setProblems(prev => [...prev, { id: Date.now(), title: problemText.trim(), status: problemStatus, url: '' }])
-    setProblemText('')
-  }
-
-  const addRecommended = () => {
-    const pick = allLinkedProblems[Math.floor(Math.random() * allLinkedProblems.length)]
-    setProblems(prev => [...prev, { id: Date.now(), title: pick.title, status: '미분류', url: pick.url }])
-  }
-
-  const patternMarkdown = (p) => `# ${p.title}
-
-- 난이도: ${p.difficulty}
-- PRO 수준: ${p.level}
-
-## 5초 판단
-${p.quick5}
-
-## 30초 판단
-${p.quick30}
-
-## 백준 추천
-${p.boj.map(x => `- ${x[0]}: ${x[1]}`).join('\n')}
-
-## 코드트리 추천
-${p.codetree.map(x => `- ${x[0]}: ${x[1]}`).join('\n')}
-
-## Python 코드
-\`\`\`python
-${p.code}
-\`\`\`
-`
-
-  const downloadCurrent = () => {
-    if (proView === 'code') {
-      downloadText(current.code, current.title.replaceAll(' ', '_') + '.py')
-    } else {
-      downloadText(patternMarkdown(current), current.title.replaceAll(' ', '_') + '.md')
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(children);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch {
+      alert("복사에 실패했습니다.");
     }
-  }
-
-  const downloadAll = () => {
-    downloadText(patterns.map(patternMarkdown).join('\n---\n\n'), 'samsung_pro_patterns_all.md')
-  }
+  };
 
   return (
-    <div className="page">
-      <section className="hero">
-        <p className="eyebrow">Samsung PRO / Baekjoon / Codetree Tracker</p>
-        <h1>알고리즘 학습 관리</h1>
-        <p className="hero-desc">삼성 PRO 패턴, 추천 문제, 풀이 기록을 한 곳에서 관리하세요.</p>
-      </section>
-
-      <div className="tabs">
-        <button className={tab === 'problems' ? 'active' : ''} onClick={() => setTab('problems')}>문제 관리</button>
-        <button className={tab === 'pro' ? 'active' : ''} onClick={() => setTab('pro')}>오늘의 삼성 PRO 패턴</button>
-      </div>
-
-      {tab === 'problems' && (
-        <>
-          <section className="stats">
-            <div className="stat-card"><strong>{counts.total}</strong><span>전체 문제</span></div>
-            <div className="stat-card"><strong>{counts.done}</strong><span>완료</span></div>
-            <div className="stat-card"><strong>{counts.doing}</strong><span>진행중</span></div>
-          </section>
-
-          <section className="panel recommend">
-            <div>
-              <h2>오늘의 추천 문제</h2>
-              <p>패턴별 백준/코드트리 문제를 자동으로 추가합니다.</p>
-            </div>
-            <button onClick={addRecommended}>추가</button>
-          </section>
-
-          <section className="add-row">
-            <input value={problemText} onChange={e => setProblemText(e.target.value)} placeholder="예: 백준 2151 거울 설치" />
-            <select value={problemStatus} onChange={e => setProblemStatus(e.target.value)}>
-              <option>미분류</option>
-              <option>진행중</option>
-              <option>완료</option>
-            </select>
-            <button onClick={addProblem}>추가</button>
-          </section>
-
-          <section className="filter-row">
-            {['전체', '완료', '진행중', '미분류'].map(x => (
-              <button key={x} className={filter === x ? 'active' : ''} onClick={() => setFilter(x)}>{x}</button>
-            ))}
-          </section>
-
-          <section className="problem-list">
-            {filteredProblems.length === 0 ? <p className="empty">표시할 문제가 없습니다.</p> : filteredProblems.map(p => (
-              <div className="problem-item" key={p.id}>
-                <span>{p.url ? <a href={p.url} target="_blank" rel="noreferrer">{p.title}</a> : p.title}</span>
-                <b>{p.status}</b>
-              </div>
-            ))}
-          </section>
-        </>
-      )}
-
-      {tab === 'pro' && (
-        <section className="pro-layout">
-          <aside className="toc-card">
-            <div className="toc-head">
-              <h2>📚 목차</h2>
-              <button onClick={downloadAll}>전체 다운로드</button>
-            </div>
-            <div className="toc-list">
-              {patterns.map((p, i) => (
-                <button key={p.title} className={proIndex === i ? 'active' : ''} onClick={() => {
-                  setProIndex(i)
-                  setProView('quick5')
-                }}>
-                  <span>{i + 1}</span>
-                  <div>
-                    <strong>{p.title}</strong>
-                    <small>{p.difficulty}</small>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </aside>
-
-          <section className="pattern-card">
-            <div className="pattern-top">
-              <div>
-                <p className="label">오늘의 삼성 PRO 패턴</p>
-                <h2>{current.title}</h2>
-                <div className="badges">
-                  <span>{current.difficulty}</span>
-                  <span>{current.level}</span>
-                </div>
-              </div>
-              <button onClick={downloadCurrent}>현재 내용 다운로드</button>
-            </div>
-
-            <div className="choice-row">
-              <button className={proView === 'quick5' ? 'active' : ''} onClick={() => setProView('quick5')}>5초 판단 방법</button>
-              <button className={proView === 'quick30' ? 'active' : ''} onClick={() => setProView('quick30')}>30초 판단 방법</button>
-              <button className={proView === 'links' ? 'active' : ''} onClick={() => setProView('links')}>문제 자동 연결</button>
-              <button className={proView === 'code' ? 'active' : ''} onClick={() => setProView('code')}>Python 코드</button>
-            </div>
-
-            <div className="content-box">
-              {proView === 'quick5' && (
-                <>
-                  <h3>5초 판단 방법</h3>
-                  <p>{current.quick5}</p>
-                </>
-              )}
-              {proView === 'quick30' && (
-                <>
-                  <h3>30초 판단 방법</h3>
-                  <p>{current.quick30}</p>
-                </>
-              )}
-              {proView === 'links' && (
-                <>
-                  <h3>실제 문제 자동 연결</h3>
-                  <div className="link-section">
-                    <h4>백준</h4>
-                    {current.boj.map(x => <a key={x[1]} href={x[1]} target="_blank" rel="noreferrer">{x[0]}</a>)}
-                  </div>
-                  <div className="link-section">
-                    <h4>코드트리</h4>
-                    {current.codetree.map(x => <a key={x[1]} href={x[1]} target="_blank" rel="noreferrer">{x[0]}</a>)}
-                  </div>
-                </>
-              )}
-              {proView === 'code' && (
-                <>
-                  <h3>Python 코드</h3>
-                  <pre><code>{current.code}</code></pre>
-                </>
-              )}
-            </div>
-          </section>
-        </section>
-      )}
+    <div className="code-wrap">
+      <button className="copy-btn" onClick={copy}>
+        {copied ? "복사됨" : "코드 복사"}
+      </button>
+      <pre>
+        <code>{children}</code>
+      </pre>
     </div>
-  )
+  );
 }
 
-export default App
+function DifficultyBadge({ difficulty, level }) {
+  return (
+    <div className="difficulty">
+      <span>{difficulty}</span>
+      <div className="dots">
+        {Array.from({ length: 5 }).map((_, idx) => (
+          <i key={idx} className={idx < level ? "on" : ""} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProblemManager({ problems, setPatterns, selectedId }) {
+  const [form, setForm] = useState({
+    platform: "BOJ",
+    title: "",
+    difficulty: "Gold III",
+    url: "",
+  });
+
+  const addProblem = () => {
+    if (!form.title.trim()) return;
+
+    setPatterns((prev) =>
+      prev.map((pattern) => {
+        if (pattern.id !== selectedId) return pattern;
+
+        const newProblem = {
+          id: `${form.platform.toLowerCase()}-${Date.now()}`,
+          platform: form.platform.trim() || "BOJ",
+          title: form.title.trim(),
+          difficulty: form.difficulty.trim() || "Gold III",
+          url: form.url.trim() || "#",
+        };
+
+        return { ...pattern, problems: [...pattern.problems, newProblem] };
+      })
+    );
+
+    setForm({ platform: "BOJ", title: "", difficulty: "Gold III", url: "" });
+  };
+
+  const removeProblem = (problemId) => {
+    setPatterns((prev) =>
+      prev.map((pattern) => {
+        if (pattern.id !== selectedId) return pattern;
+        return { ...pattern, problems: pattern.problems.filter((p) => p.id !== problemId) };
+      })
+    );
+  };
+
+  return (
+    <section className="manager">
+      <div className="section-title">
+        <p>문제 관리</p>
+        <h2>추천 문제 추가 / 삭제</h2>
+      </div>
+
+      <div className="problem-form">
+        <select value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })}>
+          <option value="BOJ">BOJ</option>
+          <option value="CodeTree">CodeTree</option>
+          <option value="Programmers">Programmers</option>
+        </select>
+        <input placeholder="문제명" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+        <input placeholder="난이도 예: Gold III" value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: e.target.value })} />
+        <input placeholder="문제 링크" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} />
+        <button onClick={addProblem}>추가</button>
+      </div>
+
+      <div className="problem-list">
+        {problems.map((problem) => (
+          <div className="problem-row" key={problem.id}>
+            <div>
+              <strong>[{problem.platform}] {problem.title}</strong>
+              <span>{problem.difficulty}</span>
+            </div>
+            <div className="problem-actions">
+              <a href={problem.url} target="_blank" rel="noreferrer">열기</a>
+              <button onClick={() => removeProblem(problem.id)}>삭제</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PatternDetail({ pattern, setPatterns }) {
+  return (
+    <article className="detail">
+      <div className="detail-head">
+        <div>
+          <p className="eyebrow">{pattern.subtitle}</p>
+          <h1>{pattern.title}</h1>
+          <p className="signal">판단 신호: {pattern.signal}</p>
+        </div>
+        <DifficultyBadge difficulty={pattern.difficulty} level={pattern.level} />
+      </div>
+
+      <div className="tag-list">
+        {pattern.tags.map((tag) => <span key={tag}>{tag}</span>)}
+      </div>
+
+      <section>
+        <div className="section-title"><p>핵심 아이디어</p><h2>이렇게 보면 됩니다</h2></div>
+        <ol className="idea-list">
+          {pattern.idea.map((item, idx) => <li key={idx}>{item}</li>)}
+        </ol>
+      </section>
+
+      <section>
+        <div className="section-title"><p>Python 예제</p><h2>바로 외울 코드</h2></div>
+        <CodeBlock>{pattern.code}</CodeBlock>
+      </section>
+
+      <section>
+        <div className="section-title"><p>실전 함정</p><h2>여기서 많이 틀립니다</h2></div>
+        <div className="trap-grid">
+          {pattern.traps.map((trap, idx) => (
+            <div className="trap" key={idx}><b>{idx + 1}</b><p>{trap}</p></div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div className="section-title"><p>자동 연결</p><h2>백준 / 코드트리 추천 문제</h2></div>
+        <div className="problem-cards">
+          {pattern.problems.map((problem) => (
+            <a className="problem-card" key={problem.id} href={problem.url} target="_blank" rel="noreferrer">
+              <span>{problem.platform}</span>
+              <strong>{problem.title}</strong>
+              <em>{problem.difficulty}</em>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <ProblemManager problems={pattern.problems} selectedId={pattern.id} setPatterns={setPatterns} />
+    </article>
+  );
+}
+
+export default function App() {
+  const [patterns, setPatterns] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : initialPatterns;
+    } catch {
+      return initialPatterns;
+    }
+  });
+
+  const [selectedId, setSelectedId] = useState(patterns[0]?.id || initialPatterns[0].id);
+  const [query, setQuery] = useState("");
+  const [levelFilter, setLevelFilter] = useState("all");
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(patterns));
+  }, [patterns]);
+
+  const filtered = useMemo(() => {
+    return patterns.filter((pattern) => {
+      const q = query.trim().toLowerCase();
+      const matchesQuery =
+        !q ||
+        pattern.title.toLowerCase().includes(q) ||
+        pattern.subtitle.toLowerCase().includes(q) ||
+        pattern.tags.some((tag) => tag.toLowerCase().includes(q)) ||
+        pattern.problems.some((problem) => problem.title.toLowerCase().includes(q));
+
+      const matchesLevel =
+        levelFilter === "all" ||
+        (levelFilter === "easy" && pattern.level <= 2) ||
+        (levelFilter === "mid" && pattern.level === 3) ||
+        (levelFilter === "hard" && pattern.level >= 4);
+
+      return matchesQuery && matchesLevel;
+    });
+  }, [patterns, query, levelFilter]);
+
+  const selected = patterns.find((pattern) => pattern.id === selectedId) || patterns[0] || initialPatterns[0];
+
+  const deletePattern = (id) => {
+    if (patterns.length <= 1) return;
+    const nextList = patterns.filter((pattern) => pattern.id !== id);
+    setPatterns(nextList);
+    if (selectedId === id && nextList[0]) {
+      setSelectedId(nextList[0].id);
+    }
+  };
+
+  const resetData = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setPatterns(initialPatterns);
+    setSelectedId(initialPatterns[0].id);
+  };
+
+  return (
+    <div className="app">
+      <aside className="sidebar">
+        <div className="brand">
+          <div className="logo">A</div>
+          <div><strong>Algo Tracker</strong><span>PRO Pattern Cards</span></div>
+        </div>
+
+        <div className="filters">
+          <input placeholder="패턴/문제 검색" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <select value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)}>
+            <option value="all">전체 난이도</option>
+            <option value="easy">기초~Gold</option>
+            <option value="mid">Gold+</option>
+            <option value="hard">PRO급</option>
+          </select>
+        </div>
+
+        <div className="pattern-menu">
+          {filtered.map((pattern) => (
+            <button key={pattern.id} className={selectedId === pattern.id ? "pattern active" : "pattern"} onClick={() => setSelectedId(pattern.id)}>
+              <div><strong>{pattern.title}</strong><span>{pattern.subtitle}</span></div>
+              <DifficultyBadge difficulty={pattern.difficulty} level={pattern.level} />
+            </button>
+          ))}
+        </div>
+      </aside>
+
+      <main>
+        <div className="top-actions">
+          <div><p className="eyebrow">삼성 PRO 대비</p><h1>자료구조 실전 패턴 모음</h1></div>
+          <div className="action-row">
+            <button className="ghost" onClick={resetData}>초기화</button>
+            <button className="danger" onClick={() => deletePattern(selected.id)}>현재 패턴 삭제</button>
+          </div>
+        </div>
+
+        <div className="summary-grid">
+          <div><strong>{patterns.length}</strong><span>패턴 수</span></div>
+          <div><strong>{patterns.reduce((acc, p) => acc + p.problems.length, 0)}</strong><span>연결 문제 수</span></div>
+          <div><strong>저장됨</strong><span>localStorage 적용</span></div>
+        </div>
+
+        <PatternDetail pattern={selected} setPatterns={setPatterns} />
+      </main>
+    </div>
+  );
+}
