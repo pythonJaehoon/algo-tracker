@@ -333,7 +333,7 @@ while dq:
         if ny < 0 or ny >= n or nx < 0 or nx >= m:
             continue
 
-        cost = board[ny][nx]  # 0 또는 1
+        cost = board[ny][nx]
 
         if dist[ny][nx] > dist[y][x] + cost:
             dist[ny][nx] = dist[y][x] + cost
@@ -573,7 +573,7 @@ for state in range(1 << n):
       { id: "pg-12913", platform: "Programmers", title: "땅따먹기", difficulty: "Level 2", url: "https://school.programmers.co.kr/learn/courses/30/lessons/12913", note: "이전 선택 제한 DP" },
       { id: "ct-dp", platform: "CodeTree", title: "DP / 상태 전이 연습", difficulty: "Gold+", url: "https://www.codetree.ai/training-field/search?keyword=dynamic%20programming", note: "DP 검색 결과" },
     ],
-  },
+  }
 ];
 
 const platformOrder = { BOJ: 0, CodeTree: 1, Programmers: 2 };
@@ -601,25 +601,39 @@ function getAllProblems(patterns) {
 function mergePatterns(savedPatterns) {
   if (!Array.isArray(savedPatterns)) return initialPatterns;
 
+  const baseById = new Map(initialPatterns.map((pattern) => [pattern.id, pattern]));
   const savedById = new Map(savedPatterns.map((pattern) => [pattern.id, pattern]));
+  const allIds = Array.from(new Set([...initialPatterns.map((p) => p.id), ...savedPatterns.map((p) => p.id)]));
 
-  return initialPatterns.map((basePattern) => {
-    const savedPattern = savedById.get(basePattern.id);
+  return allIds.map((id) => {
+    const basePattern = baseById.get(id);
+    const savedPattern = savedById.get(id);
 
+    if (!basePattern) return savedPattern;
     if (!savedPattern) return basePattern;
 
+    const baseProblems = Array.isArray(basePattern.problems) ? basePattern.problems : [];
     const savedProblems = Array.isArray(savedPattern.problems) ? savedPattern.problems : [];
     const mergedProblemsById = new Map();
 
-    basePattern.problems.forEach((problem) => mergedProblemsById.set(problem.id, problem));
+    baseProblems.forEach((problem) => mergedProblemsById.set(problem.id, problem));
     savedProblems.forEach((problem) => mergedProblemsById.set(problem.id, problem));
 
     return {
       ...basePattern,
       ...savedPattern,
+      title: savedPattern.title || basePattern.title,
+      subtitle: savedPattern.subtitle || basePattern.subtitle,
+      difficulty: savedPattern.difficulty || basePattern.difficulty,
+      level: savedPattern.level ?? basePattern.level,
+      tags: Array.isArray(savedPattern.tags) && savedPattern.tags.length ? savedPattern.tags : basePattern.tags,
+      signal: savedPattern.signal || basePattern.signal,
+      idea: Array.isArray(savedPattern.idea) && savedPattern.idea.length ? savedPattern.idea : basePattern.idea,
+      code: savedPattern.code || basePattern.code,
+      traps: Array.isArray(savedPattern.traps) && savedPattern.traps.length ? savedPattern.traps : basePattern.traps,
       problems: Array.from(mergedProblemsById.values()),
     };
-  });
+  }).filter(Boolean);
 }
 
 function clearOldStorageKeys() {
