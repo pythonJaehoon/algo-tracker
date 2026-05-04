@@ -1,0 +1,178 @@
+
+/* 연결 문제 카드 버튼 UI 수정 패치 */
+/* 기존 .u-problem a 카드 스타일과 새 button 구조 충돌 방지 */
+
+.u-problem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+/* 새 구조: div.u-problem.rich */
+.u-problem.rich {
+  display: block;
+  text-decoration: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 0;
+  background: #f9fafb;
+  color: #111827;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+/* 펼쳐진 카드 */
+.u-problem.rich.open {
+  grid-column: 1 / -1;
+  background: #ffffff;
+  border-color: #111827;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+}
+
+/* 카드 상단 전체를 버튼처럼 */
+.u-problem-main {
+  width: 100%;
+  min-height: 104px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "platform difficulty"
+    "title title"
+    "note note";
+  gap: 6px 10px;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 14px;
+  cursor: pointer;
+}
+
+/* 버튼 기본 스타일 제거 */
+.u-problem-main:focus {
+  outline: none;
+}
+
+.u-problem-main:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline-offset: -3px;
+}
+
+.u-problem-main:hover {
+  background: #eef2ff;
+}
+
+.u-problem-main span {
+  grid-area: platform;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.u-problem-main strong {
+  grid-area: title;
+  font-size: 16px;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.u-problem-main em {
+  grid-area: difficulty;
+  justify-self: end;
+  align-self: start;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #e5e7eb;
+  color: #374151;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.u-problem-main small {
+  grid-area: note;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+/* 펼침 영역 */
+.u-problem-expanded {
+  border-top: 1px solid #e5e7eb;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.u-problem-expanded h4 {
+  margin: 14px 0 10px;
+  font-size: 15px;
+  color: #111827;
+}
+
+.u-problem-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.u-problem-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 12px;
+  padding: 9px 12px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.u-problem-actions a:nth-child(2) {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+/* 펼쳐진 문제 카드 안 코드블록은 너무 크게 튀지 않게 */
+.u-problem-expanded .u-code pre {
+  max-height: 380px;
+  overflow: auto;
+}
+
+/* 예전 a.u-problem 카드도 유지 */
+a.u-problem:not(.rich) {
+  display: grid;
+  gap: 6px;
+  text-decoration: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 14px;
+  background: #f9fafb;
+  color: #111827;
+}
+
+@media (max-width: 680px) {
+  .u-problem.rich.open {
+    grid-column: auto;
+  }
+
+  .u-problem-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .u-problem-main {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "platform"
+      "title"
+      "difficulty"
+      "note";
+  }
+
+  .u-problem-main em {
+    justify-self: start;
+  }
+}

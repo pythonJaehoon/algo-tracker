@@ -1,0 +1,122 @@
+
+/* 연결 문제 버튼을 기본 카드 UI와 동일하게 맞춤 */
+.u-problem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.u-problem.rich {
+  display: block;
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  background: #ffffff;
+  color: #111827;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
+.u-problem.rich.open {
+  grid-column: 1 / -1;
+  border-color: #111827;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
+}
+
+.u-problem-main {
+  width: 100%;
+  min-height: 118px;
+  display: block;
+  text-align: left;
+  border: 0;
+  background: #ffffff;
+  color: #111827;
+  padding: 16px;
+  cursor: pointer;
+}
+
+.u-problem-main:hover {
+  background: #f9fafb;
+}
+
+.u-problem-main span {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.u-problem-main strong {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 17px;
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+  color: #111827;
+}
+
+.u-problem-main em {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #111827;
+  color: #ffffff;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 12px;
+  margin-right: 6px;
+}
+
+.u-problem-main small {
+  display: block;
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.u-problem-expanded {
+  border-top: 1px solid #e5e7eb;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.u-problem-expanded h4 {
+  margin: 14px 0 10px;
+  font-size: 15px;
+}
+
+.u-problem-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.u-problem-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 12px;
+  padding: 9px 12px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.u-problem-actions a:nth-child(2) {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+@media (max-width: 680px) {
+  .u-problem.rich.open {
+    grid-column: auto;
+  }
+}

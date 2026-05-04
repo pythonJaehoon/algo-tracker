@@ -1,0 +1,19 @@
+// App.jsx 수정 방법
+// 1) 기존 import 아래에 추가:
+import { codetreeFrequentProblems } from "./data/codetreeFrequentProblems";
+
+// 2) current에서 CodeTree 탭 items를 아래처럼 변경:
+items: codeTreeAll,
+
+// 3) codeTreeAll 계산부를 아래처럼 변경:
+const codeTreeAll = useMemo(
+  () => [...codeTreeUserItems, ...codetreeFrequentProblems],
+  [codeTreeUserItems]
+);
+
+// 4) 혹시 기존 import가 아래처럼 되어 있다면:
+import { samsungProPatterns, richArchives, codetreeProblems } from "./data/samsungUnifiedData";
+
+// 이렇게 바꿔도 됩니다:
+import { samsungProPatterns, richArchives } from "./data/samsungUnifiedData";
+import { codetreeFrequentProblems } from "./data/codetreeFrequentProblems";
