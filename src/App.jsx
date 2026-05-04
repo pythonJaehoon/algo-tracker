@@ -1,4 +1,5 @@
 
+import SamsungProArchive from './pages/SamsungProArchive';
 import { useMemo, useState } from "react";
 import "./App.css";
 
